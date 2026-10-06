@@ -58,4 +58,15 @@ class StudentServiceTest {
         s.setStudentId(0);
         assertThrows(IllegalArgumentException.class, () -> service.addStudent(s));
     }
+
+    @Test
+    void searchByCourseNameRejectsBlankInput() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByCourseName("  "));
+        assertThrows(IllegalArgumentException.class, () -> service.searchByCourseName(null));
+    }
+
+    @Test
+    void searchByNameRejectsBlankInput() {
+        assertThrows(IllegalArgumentException.class, () -> service.searchByName(""));
+    }
 }

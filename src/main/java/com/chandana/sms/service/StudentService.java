@@ -46,7 +46,17 @@ public class StudentService {
     }
 
     public List<Student> searchByName(String name) throws SQLException {
-        return studentDAO.searchByName(name);
+        if (ValidationUtil.isBlank(name)) {
+            throw new IllegalArgumentException("Search name must not be empty.");
+        }
+        return studentDAO.searchByName(name.trim());
+    }
+
+    public List<Student> searchByCourseName(String courseName) throws SQLException {
+        if (ValidationUtil.isBlank(courseName)) {
+            throw new IllegalArgumentException("Course name must not be empty.");
+        }
+        return studentDAO.searchByCourseName(courseName.trim());
     }
 
     public void updateStudent(Student s) throws SQLException {
