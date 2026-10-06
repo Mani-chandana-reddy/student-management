@@ -5,11 +5,15 @@ import com.chandana.sms.util.DatabaseConnection;
 import com.chandana.sms.model.Course;
 import com.chandana.sms.model.Student;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 public class EnrollmentService {
+    private static final Logger log = LoggerFactory.getLogger(EnrollmentService.class);
     private final EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
 
   
@@ -30,11 +34,12 @@ public class EnrollmentService {
 
             enrollmentDAO.insertEnrollment(studentId, courseId, conn);
             conn.commit();
+            log.info("Enrolled student {} in course {}", studentId, courseId);
         } catch (Exception e) {
             try {
                 conn.rollback();
             } catch (SQLException rollbackEx) {
-                System.out.println("Rollback failed: " + rollbackEx.getMessage());
+                log.error("Rollback failed", rollbackEx);
             }
             if (e instanceof SQLException) throw (SQLException) e;
             throw new IllegalArgumentException(e.getMessage());
