@@ -3,11 +3,15 @@ package com.chandana.sms.service;
 import com.chandana.sms.dao.StudentDAO;
 import com.chandana.sms.model.Student;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 
 public class StudentService {
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
     private final StudentDAO studentDAO = new StudentDAO();
     private static final Set<String> SORTABLE_COLUMNS = Set.of("student_id", "name", "marks");
 
@@ -17,6 +21,7 @@ public class StudentService {
             throw new IllegalArgumentException("Student ID " + s.getStudentId() + " already exists.");
         }
         studentDAO.insertStudent(s);
+        log.info("Added student {}", s.getStudentId());
     }
 
 
@@ -48,6 +53,7 @@ public class StudentService {
             throw new IllegalArgumentException("Student ID " + s.getStudentId() + " does not exist.");
         }
         studentDAO.updateStudent(s);
+        log.info("Updated student {}", s.getStudentId());
     }
 
     public void deleteStudent(int id) throws SQLException {
@@ -55,6 +61,7 @@ public class StudentService {
             throw new IllegalArgumentException("Student ID " + id + " does not exist.");
         }
         studentDAO.deleteStudent(id);
+        log.info("Deleted student {}", id);
     }
 
     public List<Student> filterByDepartment(String dept) throws SQLException {
