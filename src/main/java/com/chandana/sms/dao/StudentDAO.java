@@ -60,6 +60,21 @@ public class StudentDAO {
         return list;
     }
 
+    public List<Student> searchByCourseName(String courseName) throws SQLException {
+        String sql = "SELECT DISTINCT s.* FROM students s " +
+                     "INNER JOIN enrollments e ON s.student_id = e.student_id " +
+                     "INNER JOIN courses c ON c.course_id = e.course_id " +
+                     "WHERE c.course_name ILIKE ? ORDER BY s.student_id";
+        List<Student> list = new ArrayList<>();
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement(sql)) {
+            ps.setString(1, "%" + courseName + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        }
+        return list;
+    }
+
     public boolean updateStudent(Student s) throws SQLException {
         String sql = "UPDATE students SET name=?, age=?, email=?, phone=?, department=?, year=?, marks=?, status=? " +
                      "WHERE student_id=?";

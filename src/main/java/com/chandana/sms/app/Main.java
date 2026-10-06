@@ -7,12 +7,16 @@ import com.chandana.sms.service.CourseService;
 import com.chandana.sms.service.EnrollmentService;
 import com.chandana.sms.service.StudentService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
     private static final Scanner scanner = new Scanner(System.in);
     private static final StudentService studentService = new StudentService();
     private static final CourseService courseService = new CourseService();
@@ -22,10 +26,12 @@ public class Main {
         try {
             DatabaseConnection.getConnection();
         } catch (SQLException e) {
+            log.error("Could not connect to the database", e);
             System.out.println("Could not connect to the database: " + e.getMessage());
             return;
         }
 
+        log.info("Application started");
         boolean running = true;
         while (running) {
             printMenu();
@@ -53,17 +59,21 @@ public class Main {
                     case 19: viewAverageMarks(); break;
                     case 20: viewHighest(); break;
                     case 21: viewLowest(); break;
-                    case 22: running = false; break;
+                    case 22: searchByCourseName(); break;
+                    case 23: running = false; break;
                     default: System.out.println("Invalid choice. Try again.");
                 }
             } catch (IllegalArgumentException e) {
+                log.warn("Invalid input: {}", e.getMessage());
                 System.out.println("Error: " + e.getMessage());
             } catch (SQLException e) {
+                log.error("Database error", e);
                 System.out.println("Database error: " + e.getMessage());
             }
         }
 
         DatabaseConnection.closeConnection();
+        log.info("Application stopped");
         System.out.println("Goodbye.");
     }
 
@@ -90,7 +100,8 @@ public class Main {
         System.out.println("19. View Average Marks");
         System.out.println("20. View Highest-Scoring Student");
         System.out.println("21. View Lowest-Scoring Student");
-        System.out.println("22. Exit");
+        System.out.println("22. Search Student by Course Name");
+        System.out.println("23. Exit");
     }
 
     private static void addStudent() throws SQLException {
@@ -125,6 +136,13 @@ public class Main {
         List<Student> list = studentService.searchByName(name);
         list.forEach(System.out::println);
         if (list.isEmpty()) System.out.println("No matching students.");
+    }
+
+    private static void searchByCourseName() throws SQLException {
+        System.out.print("Course name (or part of it): "); String course = scanner.nextLine();
+        List<Student> list = studentService.searchByCourseName(course);
+        list.forEach(System.out::println);
+        if (list.isEmpty()) System.out.println("No students found for that course.");
     }
 
     private static void updateStudent() throws SQLException {
