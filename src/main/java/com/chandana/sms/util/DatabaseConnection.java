@@ -5,18 +5,27 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:postgresql://localhost:5432/student_management";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "CHANGE_ME";
-
+    private static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/student_management";
+    private static final String DEFAULT_USER = "postgres";
 
     private static Connection connection;
 
+    private static String env(String name, String fallback) {
+        String value = System.getenv(name);
+        return (value == null || value.isEmpty()) ? fallback : value;
+    }
+
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
+            String url = env("DB_URL", DEFAULT_URL);
+            String user = env("DB_USER", DEFAULT_USER);
+            String password = env("DB_PASSWORD", null);
+            if (password == null) {
+                throw new SQLException("DB_PASSWORD environment variable is not set.");
+            }
             try {
                 Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                connection = DriverManager.getConnection(url, user, password);
             } catch (ClassNotFoundException e) {
                 throw new SQLException("PostgreSQL JDBC driver not found", e);
             }
