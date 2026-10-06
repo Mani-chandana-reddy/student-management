@@ -7,12 +7,16 @@ import com.chandana.sms.service.CourseService;
 import com.chandana.sms.service.EnrollmentService;
 import com.chandana.sms.service.StudentService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    private static final Logger log = LoggerFactory.getLogger(Main.class);
     private static final Scanner scanner = new Scanner(System.in);
     private static final StudentService studentService = new StudentService();
     private static final CourseService courseService = new CourseService();
@@ -22,10 +26,12 @@ public class Main {
         try {
             DatabaseConnection.getConnection();
         } catch (SQLException e) {
+            log.error("Could not connect to the database", e);
             System.out.println("Could not connect to the database: " + e.getMessage());
             return;
         }
 
+        log.info("Application started");
         boolean running = true;
         while (running) {
             printMenu();
@@ -57,13 +63,16 @@ public class Main {
                     default: System.out.println("Invalid choice. Try again.");
                 }
             } catch (IllegalArgumentException e) {
+                log.warn("Invalid input: {}", e.getMessage());
                 System.out.println("Error: " + e.getMessage());
             } catch (SQLException e) {
+                log.error("Database error", e);
                 System.out.println("Database error: " + e.getMessage());
             }
         }
 
         DatabaseConnection.closeConnection();
+        log.info("Application stopped");
         System.out.println("Goodbye.");
     }
 
