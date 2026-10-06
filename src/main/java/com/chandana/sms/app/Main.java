@@ -141,9 +141,16 @@ public class Main {
         System.out.print("New Department (" + existing.getDepartment() + "): "); String dept = scanner.nextLine();
         int year = readInt("New Year (" + existing.getYear() + "): ");
         double marks = readDouble("New Marks (" + existing.getMarks() + "): ");
-        Student s = new Student(id, name, age, email, phone, dept, year, existing.getAdmissionDate(), marks, existing.getStatus());
+        Student s = new Student(id, keepIfBlank(name, existing.getName()), age,
+                keepIfBlank(email, existing.getEmail()), keepIfBlank(phone, existing.getPhone()),
+                keepIfBlank(dept, existing.getDepartment()), year, existing.getAdmissionDate(), marks, existing.getStatus());
         studentService.updateStudent(s);
         System.out.println("Student updated.");
+    }
+
+    // Pressing Enter on an update prompt keeps the current value (also avoids a null or empty email)
+    private static String keepIfBlank(String input, String current) {
+        return (input == null || input.trim().isEmpty()) ? current : input.trim();
     }
 
     private static void deleteStudent() throws SQLException {
