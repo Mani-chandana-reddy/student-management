@@ -2,6 +2,7 @@ package com.chandana.sms.service;
 
 import com.chandana.sms.dao.StudentDAO;
 import com.chandana.sms.model.Student;
+import com.chandana.sms.util.ValidationUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +26,15 @@ public class StudentService {
     }
 
 
-    private void validate(Student s) {
+    void validate(Student s) {
         if (s.getStudentId() <= 0) throw new IllegalArgumentException("Student ID must be greater than 0.");
-        if (s.getName() == null || s.getName().trim().isEmpty()) throw new IllegalArgumentException("Name must not be empty.");
-        if (s.getAge() <= 0 || s.getAge() > 100) throw new IllegalArgumentException("Age is invalid.");
-        if (s.getEmail() == null || s.getEmail().trim().isEmpty()) throw new IllegalArgumentException("Email must not be empty.");
-        if (s.getDepartment() == null || s.getDepartment().trim().isEmpty()) throw new IllegalArgumentException("Department must not be empty.");
-        if (s.getYear() < 1 || s.getYear() > 6) throw new IllegalArgumentException("Year is invalid.");
-        if (s.getMarks() < 0 || s.getMarks() > 100) throw new IllegalArgumentException("Marks must be between 0 and 100.");
+        if (ValidationUtil.isBlank(s.getName())) throw new IllegalArgumentException("Name must not be empty.");
+        if (!ValidationUtil.isValidAge(s.getAge())) throw new IllegalArgumentException("Age is invalid.");
+        if (ValidationUtil.isBlank(s.getEmail())) throw new IllegalArgumentException("Email must not be empty.");
+        if (!ValidationUtil.isValidEmail(s.getEmail())) throw new IllegalArgumentException("Email format is invalid.");
+        if (ValidationUtil.isBlank(s.getDepartment())) throw new IllegalArgumentException("Department must not be empty.");
+        if (!ValidationUtil.isValidYear(s.getYear())) throw new IllegalArgumentException("Year is invalid.");
+        if (!ValidationUtil.isValidMarks(s.getMarks())) throw new IllegalArgumentException("Marks must be between 0 and 100.");
     }
 
     public List<Student> getAllStudents() throws SQLException {
