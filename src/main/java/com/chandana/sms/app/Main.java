@@ -59,7 +59,8 @@ public class Main {
                     case 19: viewAverageMarks(); break;
                     case 20: viewHighest(); break;
                     case 21: viewLowest(); break;
-                    case 22: running = false; break;
+                    case 22: searchByCourseName(); break;
+                    case 23: running = false; break;
                     default: System.out.println("Invalid choice. Try again.");
                 }
             } catch (IllegalArgumentException e) {
@@ -99,7 +100,8 @@ public class Main {
         System.out.println("19. View Average Marks");
         System.out.println("20. View Highest-Scoring Student");
         System.out.println("21. View Lowest-Scoring Student");
-        System.out.println("22. Exit");
+        System.out.println("22. Search Student by Course Name");
+        System.out.println("23. Exit");
     }
 
     private static void addStudent() throws SQLException {
@@ -134,6 +136,13 @@ public class Main {
         List<Student> list = studentService.searchByName(name);
         list.forEach(System.out::println);
         if (list.isEmpty()) System.out.println("No matching students.");
+    }
+
+    private static void searchByCourseName() throws SQLException {
+        System.out.print("Course name (or part of it): "); String course = scanner.nextLine();
+        List<Student> list = studentService.searchByCourseName(course);
+        list.forEach(System.out::println);
+        if (list.isEmpty()) System.out.println("No students found for that course.");
     }
 
     private static void updateStudent() throws SQLException {
